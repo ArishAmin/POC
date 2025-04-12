@@ -45,21 +45,21 @@ export const generateBills = (currency: string) => [
     id: 'BILL-001',
     amount: 1000,
     currency,
-    description: 'Software License',
+    description: 'Product #01',
     dueDate: '2024-04-01'
   },
   {
     id: 'BILL-002',
     amount: 750,
     currency,
-    description: 'Consulting Services',
+    description: 'Product #02',
     dueDate: '2024-04-15'
   },
   {
     id: 'BILL-003',
     amount: 5000,
     currency,
-    description: 'Hardware Purchase',
+    description: 'Product #03',
     dueDate: '2024-04-30'
   }
 ];

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { countries, generateBills } from '../data/mockData';
 import { Bill, Country } from '../types';
-import { FileText, DollarSign, Globe } from 'lucide-react';
+import { FileText, DollarSign } from 'lucide-react';
 
 export default function BillsPage() {
-  const [selectedCountry, setSelectedCountry] = useState<Country>(countries[0]);
+  // Set China as default country (assuming it's the second item in countries array)
+  const [selectedCountry] = useState<Country>(countries.find(c => c.code === 'CN')!);
   const [selectedBills, setSelectedBills] = useState<string[]>([]);
   const navigate = useNavigate();
   
@@ -46,32 +47,12 @@ export default function BillsPage() {
       .reduce((acc, bill) => acc + bill.amount, 0);
   };
 
+  // Get exchange rate from CNY to USD
+  const exchangeRate = 0.14; // This should match the rate in your api.ts
+
   return (
     <div className="space-y-6">
       <div className="bg-white shadow-sm rounded-lg p-6">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Select Your Country</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {countries.map((country) => (
-              <button
-                key={country.code}
-                onClick={() => {
-                  setSelectedCountry(country);
-                  setSelectedBills([]);
-                }}
-                className={`p-4 border rounded-lg flex items-center space-x-3 ${
-                  selectedCountry.code === country.code
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-300'
-                }`}
-              >
-                <span className="text-2xl">{country.flag}</span>
-                <span className="font-medium">{country.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Outstanding Bills</h1>
           <button
@@ -112,9 +93,12 @@ export default function BillsPage() {
               <div className="mt-4">
                 <p className="text-sm text-gray-600">{bill.description}</p>
                 <div className="mt-2 flex items-center">
-                  <DollarSign className="h-4 w-4 text-gray-500" />
+                  
                   <span className="text-lg font-semibold text-gray-900">
-                    {bill.amount.toLocaleString()} {bill.currency}
+                    ${(bill.amount * exchangeRate).toFixed(2)} USD
+                  </span>
+                  <span className="ml-2 text-sm text-gray-500">
+                    ({bill.amount.toLocaleString()} CNY)
                   </span>
                 </div>
                 <p className="mt-2 text-sm text-gray-500">
@@ -135,9 +119,14 @@ export default function BillsPage() {
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <div className="flex justify-between items-center">
               <span className="text-gray-700">Selected Bills: {selectedBills.length}</span>
-              <span className="text-lg font-semibold">
-                Total: {getTotalAmount(bills).toLocaleString()} {selectedCountry.currency}
-              </span>
+              <div className="text-right">
+                <span className="text-lg font-semibold">
+                  Total: ${(getTotalAmount(bills) * exchangeRate).toFixed(2)} USD
+                </span>
+                <span className="ml-2 text-sm text-gray-500">
+                  ({getTotalAmount(bills).toLocaleString()} CNY)
+                </span>
+              </div>
             </div>
           </div>
         )}

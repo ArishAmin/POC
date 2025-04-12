@@ -16,7 +16,7 @@ function App() {
               <div className="flex">
                 <div className="flex-shrink-0 flex items-center">
                   <Building2 className="h-8 w-8 text-blue-600" />
-                  <span className="ml-2 text-xl font-bold text-gray-900">Welcome Patel Enterprises</span>
+                  <span className="ml-2 text-xl font-bold text-gray-900">Beijing Quality Products</span>
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               
