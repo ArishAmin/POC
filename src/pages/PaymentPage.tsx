@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Bill, PaymentMethod } from '../types';
 import { getPaymentMethods, getRates, createPayment } from '../api/currencyCloud';
-import { CreditCard, ArrowRight, RefreshCw, Building } from 'lucide-react';
+import { CreditCard, ArrowRight, RefreshCw, Building, Lock, CreditCard as CardIcon, Phone, Ban } from 'lucide-react';
 
 export default function PaymentPage() {
   const location = useLocation();
@@ -11,7 +11,7 @@ export default function PaymentPage() {
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<string>('');
-  const [exchangeRate, setExchangeRate] = useState<number>(0.14); // Matching the rate from BillsPage
+  const [exchangeRate, setExchangeRate] = useState<number>(0.14);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     cardNumber: '',
@@ -81,132 +81,189 @@ export default function PaymentPage() {
     switch (methodId) {
       case '0': // UnionPay
         return (
-          <form onSubmit={handlePayment} className="space-y-4 mt-4 p-4 bg-gray-50 rounded-lg">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Card Number</label>
-              <input
-                type="text"
-                name="cardNumber"
-                placeholder="6222 **** **** ****"
-                value={formData.cardNumber}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Expiry Date</label>
-                <input
-                  type="text"
-                  name="expiryDate"
-                  placeholder="MM/YY"
-                  value={formData.expiryDate}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
-                  required
-                />
+          <form onSubmit={handlePayment} className="mt-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center space-x-2 mb-6">
+                <CardIcon className="h-5 w-5 text-blue-500" />
+                <h3 className="text-lg font-semibold text-gray-900">Card Details</h3>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">CVV</label>
-                <input
-                  type="text"
-                  name="cvv"
-                  placeholder="***"
-                  value={formData.cvv}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
-                  required
-                />
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="cardNumber"
+                      placeholder="6222 **** **** ****"
+                      value={formData.cardNumber}
+                      onChange={handleInputChange}
+                      className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                    <CreditCard className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                    <input
+                      type="text"
+                      name="expiryDate"
+                      placeholder="MM/YY"
+                      value={formData.expiryDate}
+                      onChange={handleInputChange}
+                      className="px-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                    <div className="relative">
+                      <input
+                        type="password"
+                        name="cvv"
+                        placeholder="***"
+                        maxLength={3}
+                        value={formData.cvv}
+                        onChange={handleInputChange}
+                        className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                      <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="px-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
               </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Cardholder Name</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
-                required
-              />
             </div>
           </form>
         );
       
       case '1': // Alipay
         return (
-          <form onSubmit={handlePayment} className="space-y-4 mt-4 p-4 bg-gray-50 rounded-lg">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Alipay Account</label>
-              <input
-                type="text"
-                name="phoneNumber"
-                placeholder="Phone number or email"
-                value={formData.phoneNumber}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Payment Password</label>
-              <input
-                type="password"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
-                required
-              />
+          <form onSubmit={handlePayment} className="mt-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center space-x-2 mb-6">
+                <Phone className="h-5 w-5 text-blue-500" />
+                <h3 className="text-lg font-semibold text-gray-900">Alipay Account</h3>
+              </div>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number or Email</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="phoneNumber"
+                      placeholder="+86 123 4567 8900"
+                      value={formData.phoneNumber}
+                      onChange={handleInputChange}
+                      className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                    <Phone className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Payment Password</label>
+                  <div className="relative">
+                    <input
+                      type="password"
+                      placeholder="Enter your 6-digit payment password"
+                      className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                    <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+              </div>
             </div>
           </form>
         );
       
       case '2': // WeChat Pay
         return (
-          <div className="space-y-4 mt-4 p-4 bg-gray-50 rounded-lg text-center">
-            <div className="bg-white p-4 rounded-lg inline-block">
-              <div className="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center">
-                <p className="text-gray-600">QR Code Demo</p>
+          <div className="mt-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+              <div className="flex items-center justify-center space-x-2 mb-6">
+                <Phone className="h-5 w-5 text-blue-500" />
+                <h3 className="text-lg font-semibold text-gray-900">WeChat Pay QR Code</h3>
+              </div>
+              <div className="bg-gray-50 p-8 rounded-lg inline-block mb-4">
+                <div className="w-48 h-48 bg-white border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                  <div className="text-center">
+                    <Phone className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">Demo QR Code</p>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2 text-center">
+                <p className="text-sm font-medium text-gray-900">Scan with WeChat</p>
+                <p className="text-xs text-gray-500">Open WeChat, tap "+", and select "Scan"</p>
               </div>
             </div>
-            <p className="text-sm text-gray-600">Scan with WeChat app to pay</p>
           </div>
         );
       
       case '3': // Bank Transfer
         return (
-          <form onSubmit={handlePayment} className="space-y-4 mt-4 p-4 bg-gray-50 rounded-lg">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Account Holder Name</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Bank Account Number</label>
-              <input
-                type="text"
-                name="bankAccount"
-                value={formData.bankAccount}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">ID Number</label>
-              <input
-                type="text"
-                name="idNumber"
-                value={formData.idNumber}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
-                required
-              />
+          <form onSubmit={handlePayment} className="mt-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="flex items-center space-x-2 mb-6">
+                <Ban className="h-5 w-5 text-blue-500" />
+                <h3 className="text-lg font-semibold text-gray-900">Bank Transfer Details</h3>
+              </div>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Account Holder Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="px-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Bank Account Number</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="bankAccount"
+                      value={formData.bankAccount}
+                      onChange={handleInputChange}
+                      className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                    <Ban className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="idNumber"
+                      value={formData.idNumber}
+                      onChange={handleInputChange}
+                      placeholder="Enter your Chinese ID number"
+                      className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                    <CardIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+              </div>
             </div>
           </form>
         );
@@ -271,10 +328,10 @@ export default function PaymentPage() {
                 <button
                   key={method.id}
                   onClick={() => setSelectedMethod(method.id)}
-                  className={`p-4 border rounded-lg flex flex-col items-center space-y-2 ${
+                  className={`p-4 border rounded-lg flex flex-col items-center space-y-2 transition-all ${
                     selectedMethod === method.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-blue-300'
+                      ? 'border-blue-500 bg-blue-50 shadow-sm'
+                      : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
                   }`}
                 >
                   <span className="text-2xl">{method.icon}</span>
@@ -311,7 +368,7 @@ export default function PaymentPage() {
           <button
             onClick={handlePayment}
             disabled={isLoading}
-            className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transition-colors"
           >
             {isLoading ? (
               <span>Processing...</span>
