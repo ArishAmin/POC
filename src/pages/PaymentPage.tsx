@@ -291,7 +291,7 @@ export default function PaymentPage() {
             <h2 className="text-lg font-semibold text-gray-900">Recipient Details</h2>
           </div>
           <div className="space-y-1 text-sm text-gray-600">
-            <p><strong>Company:</strong> Anybill</p>
+            <p><strong>Company:</strong> Anybill Financial Services</p>
             <p><strong>Address:</strong> 4747 Bethesda Ave #610, Bethesda, MD 20814, USA</p>
             <p><strong>Phone No:</strong> 877-426-9245</p>
             <p><strong>Registration No:</strong> US12345678</p>
